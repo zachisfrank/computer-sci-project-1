@@ -1,0 +1,19 @@
+import menu_log
+import sales
+import user
+import game
+
+
+main()
+
+    validation = validate_user()
+    if validation = True
+        main_menu()
+    elif validation = Admin
+        admin_menu()
+    else
+        print('Username or Password is invalid')
+
+
+
+    

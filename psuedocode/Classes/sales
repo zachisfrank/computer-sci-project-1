@@ -1,0 +1,2 @@
+class sales
+    __init__(sale_id,sale_user,cost,)

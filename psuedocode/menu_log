@@ -1,0 +1,46 @@
+main_menu()
+        print options
+         a.View the game catalog
+         b.Place an order for the game disk
+         c.Update user info
+         d.quit
+         try
+            case option
+                option = a
+                    display_catalog()
+                option = b
+                    place_order()
+                option = c
+                    user_settings()
+                option = d
+                    quit()
+                else
+                    print(Please enter a valid option)
+        except ValueError
+                print(Enter a valid option)
+
+admin_menu()
+        print options  
+            a. Generate sales report
+            b. Generate stock report
+            c. Manage current orders
+            d. Edit Game Pricing
+            e. View User data 
+            f. quit
+        case options   
+            = a 
+                gen_sales()
+            = b 
+                gen_stock()
+            = c 
+                orders()
+            = d 
+                pricing()
+            = e 
+                gen_user_data()
+            = f 
+                quit()
+            else   
+                print(Please enter a valid option)
+    except ValueError
+            print(Enter a valid option)

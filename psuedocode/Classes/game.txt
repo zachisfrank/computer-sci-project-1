@@ -1,0 +1,41 @@
+class game
+    __init__(self, game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+        self.game_id = game_id
+        self.title = title
+        self.genre = genre
+        self.platform = platform
+        self.price = float(price) 
+        self.stock = stock
+        self.discount = 0.0
+        self.publisher = publisher
+        self.release_date = release_date
+        self.description = description
+        self.sales = 0
+        self.rating = 0
+
+    def change_discount(self,new_discount)
+        self.discount = new_discount
+        return discount
+
+    def purchase(self)
+        if self.stock >= 1
+            self.stock -= 1
+            return stock
+        else
+            return 'Insufficient Stock'
+    
+make_gamelist()
+    game_list = {}
+    with open('game_list.txt', 'r') as game_file
+        for lines in game_file
+            line = game_file.readline()
+            game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, = line.strip().split(',')
+            old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+            game_list[game_id] = old_game
+        return game_list
+
+display_games()
+    for key in game_list
+        print (game_list[key].publisher, " released ", game_list[key].title," in " game_list[key].release_date"| ", game_list[key].rating"/10 | \n
+        | $"game_list[key].price*game_list[key].discount," | with only ",game_list[key], "disks left\n",
+        game_list[key].description)
