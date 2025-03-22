@@ -4,7 +4,7 @@ class user
         self.username
         self.password
         self.games = []
-        self.balance =
+        self.balance = 0.0
 
     def save_user(self, username, password, games, balance)
         with open('users.txt', 'w') as file
