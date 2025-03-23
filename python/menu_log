@@ -1,0 +1,60 @@
+from game import*
+from user import*
+
+def main_menu(user_list, username):
+    while True:
+        print("\nMain Menu Options:")
+        print("a. View the game catalog")
+        print("b. Place an order for the game disk")
+        print("c. Update user info")
+        print("d. Quit")
+        
+        option = input("Select an option: ").lower()
+        try:
+            if option == 'a':
+                display_games()
+            elif option == 'b':
+                select_game(username)
+            elif option == 'c':
+                user_settings(username)
+            elif option == 'd':
+                print("Exiting the main menu. Goodbye!")
+                break
+            else:
+                print("Please enter a valid option.")
+        except ValueError:
+            print("Enter a valid option.")
+
+
+def admin_menu():
+    while True:
+        print("\nAdmin Menu Options:")
+        print("a. Generate sales report")
+        print("b. Generate stock report")
+        print("c. Manage current orders")
+        print("d. Edit game pricing")
+        print("e. View user data")
+        print("f. Edit discount")
+        print("g. Quit")
+        
+        option = input("Select an option: ").lower()
+        try:
+            if option == 'a':
+                gen_sales()
+            elif option == 'b':
+                gen_stock()
+            elif option == 'c':
+                orders()
+            elif option == 'd':
+                pricing()
+            elif option == 'e':
+                gen_user_data()
+            elif option == 'f':
+                discount_game()
+            elif option == 'g':
+                print("Exiting the admin menu. Goodbye!")
+                break
+            else:
+                print("Please enter a valid option.")
+        except ValueError:
+            print("Enter a valid option.")

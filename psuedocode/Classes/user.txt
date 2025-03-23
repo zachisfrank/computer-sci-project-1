@@ -72,9 +72,9 @@ validate_user()
 
 purchase_game(username)
     game_key = input ("Enter the purchase key for the game you wish to buy")
-    withdrawal = withdraw(game_list[game_key].price)
-        if withdrawal == game_list[game_key].price and gamelist[game_key].purchase() != 'Insufficient Stock'
+    withdrawal = withdraw(game_list[game_key].price*game_list[game_key.discount])
+        if withdrawal == game_list[game_key].price*game_list[game_key].discount and game_list[game_key].purchase() != 'Insufficient Stock'
             print(f'you have purchased {game_list[game_key].title} for ${withdrawal}')
             user_list[username].add_game(game_key)
-            gamelist[game_key].purchase()
+            game_list[game_key].purchase()
         

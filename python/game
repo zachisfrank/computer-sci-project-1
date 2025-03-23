@@ -1,0 +1,45 @@
+class game:
+    def __init__(self, game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+        self.game_id = game_id
+        self.title = title
+        self.genre = genre
+        self.platform = platform
+        self.price = float(price) 
+        self.stock = stock
+        self.discount = 0.0
+        self.publisher = publisher
+        self.release_date = release_date
+        self.description = description
+        self.sales = 0
+        self.rating = 0
+
+    def change_discount(self,new_discount):
+        self.discount = new_discount
+        return discount
+
+    def purchase(self):
+        if self.stock >= 1
+            self.stock -= 1
+            return 'Purchase Successful'
+        else
+            return 'Insufficient Stock'
+    
+def make_gamelist():
+        game_list = {}
+        with open('game_list.txt', 'r') as game_file:
+            for lines in game_file:
+                line = game_file.readline()
+                game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, = line.strip().split(',')
+                old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+                game_list[game_id] = old_game
+        return game_list
+
+def display_games(game_list):
+        for key in game_list:
+            print (f"game_list[key].publisher released game_list[key].title in  game_list[key].release_date | , game_list[key].rating/10 | \n")
+            print (f"| The purchase key is: ,{game_list[key].game_id}, ${game_list[key].price*game_list[key].discount}, | with only ,{game_list[key].stock}, disks left\n")
+            print (game_list[key].description)
+
+def discount_game(game_list,key)
+        input('Enter game_key to choose which game to change')
+        change_discount()

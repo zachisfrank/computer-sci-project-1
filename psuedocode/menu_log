@@ -26,7 +26,8 @@ admin_menu()
             c. Manage current orders
             d. Edit Game Pricing
             e. View User data 
-            f. quit
+            f. Edit discount
+            g. quit
         case options   
             = a 
                 gen_sales()
@@ -39,6 +40,8 @@ admin_menu()
             = e 
                 gen_user_data()
             = f 
+                discount_game()
+            = g
                 quit()
             else   
                 print(Please enter a valid option)

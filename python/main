@@ -1,0 +1,19 @@
+import user
+import game
+import menu_log
+
+
+def main(): 
+    user_list = make_userlist()
+    while True:
+        validation, username = validate_user(user_list)
+        if validation == True:
+            main_menu(user_list, username)
+        elif validation == 'Admin':
+            admin_menu()
+        else:
+            print('Username or Password is invalid')
+
+
+
+    

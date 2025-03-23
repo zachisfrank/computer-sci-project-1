@@ -1,0 +1,89 @@
+from random import randint
+from game import* 
+
+class user:
+    def __init__(self, username, password, games, balance):
+        self.username = username
+        self.password = password
+        self.games = []
+        self.balance = 0.0
+
+    def save_user(self, user_list):
+        with open('users.txt', 'w') as file:
+            for i in range(len(user_list)):
+                file.write(f"{user_list[i].username},{user_list[i].password},{user_list[i].games},{user_list[i].balance}")
+
+    def view_bal(self, balance):
+        return balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            return amount
+        else:
+            return "Insufficient funds"
+
+    def add_game(self,game_list, game_key):
+        if game_key in game_list:
+            self.games.append(game_key)
+            game_list[game_key].purchase()
+        else:
+            return "Invalid game key"
+
+def make_userlist():
+    user_list = {}
+    try:
+        with open('users.txt', 'r') as user_file:
+            for line in user_file:
+                line = user_file.readline()
+                username, password, games, balance = line.strip().split(',')
+                old_user = user(username, password, games, balance)
+                user_list[username] = old_user
+    except FileNotFoundError:
+        print("No existing user found.")
+    return user_list
+
+def make_user(user_list):
+    user_exist = True
+    while user_exist:
+        username = input("Enter your username:\n").strip().lower()
+        password = input("Enter your password:\n").strip().lower()
+        if username in user_list:
+            print('This user already exists. Try again.')
+        else:
+            user_exist = False
+            new_user = user(username, password)
+            user_list[username] = new_user
+    return user_list, username
+
+def validate_user(user_list):
+    while True:
+        is_new_user = input("Are you new to the programs? (y/n)").strip().lower()
+        if is_new_user == 'n': 
+            username = input("Enter Username:").strip().lower()
+            password = input("Enter Password:").lower()
+            if username in user_list and user_list[username].password == password:
+                    return True, username, user_list
+            else:
+                print("Invalid username or password")
+        elif is_new_user == 'y':
+            user_list, username = make_user(user_list)
+            return True, username, user_list
+        else:
+            print("Please enter 'y' or 'n'.")
+
+def purchase_game(user_list, game_list, username):
+    game_key = input ("Enter the purchase key for the game you wish to buy").strip()
+    if game_key in game_list:
+        game = game_list[game_key]
+        discount_price = game.price*(1*game.discount)
+        withdrawal = user_list[username].withdraw(discount_price)
+        if withdrawal != "Insufficient funds" and game.purchase() == "Purchase Successful":
+            print(f"You have purchased '{game.title}' for ${discount_price:.2f}.") # .2f makes it limited to 2 decimal points
+        else:
+            print("Purchase failed due to insufficient funds or stock")
+    else:
+        print("Invalid game key")
