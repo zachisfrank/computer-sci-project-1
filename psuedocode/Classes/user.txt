@@ -55,7 +55,7 @@ make_user()
             user_exist = False
     new_user = user(username, password)
     user_list[username] = new_user
-    return user_list
+    return user_list, username
 
 validate_user()
     ask if new user (y/n)
@@ -67,6 +67,14 @@ validate_user()
                 return True
         else return False
     elif new user is n
-        make_user()
-        validation = True
-        return validation
+         username = make_user()
+        return True, username
+
+purchase_game(username)
+    game_key = input ("Enter the purchase key for the game you wish to buy")
+    withdrawal = withdraw(game_list[game_key].price)
+        if withdrawal == game_list[game_key].price and gamelist[game_key].purchase() != 'Insufficient Stock'
+            print(f'you have purchased {game_list[game_key].title} for ${withdrawal}')
+            user_list[username].add_game(game_key)
+            gamelist[game_key].purchase()
+        

@@ -37,5 +37,5 @@ make_gamelist()
 display_games()
     for key in game_list
         print (game_list[key].publisher, " released ", game_list[key].title," in " game_list[key].release_date"| ", game_list[key].rating"/10 | \n
-        | $"game_list[key].price*game_list[key].discount," | with only ",game_list[key], "disks left\n",
+        | "The purchase key is: ", game_list[key].game_id, "$"game_list[key].price*game_list[key].discount," | with only ",game_list[key], "disks left\n",
         game_list[key].description)

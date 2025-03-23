@@ -1,4 +1,4 @@
-main_menu()
+main_menu(username)
         print options
          a.View the game catalog
          b.Place an order for the game disk
@@ -7,11 +7,11 @@ main_menu()
          try
             case option
                 option = a
-                    display_catalog()
+                    display_games()
                 option = b
-                    place_order()
+                    purchase_game(username)
                 option = c
-                    user_settings()
+                    user_settings(username)
                 option = d
                     quit()
                 else
