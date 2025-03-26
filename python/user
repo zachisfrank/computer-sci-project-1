@@ -1,5 +1,5 @@
 from random import randint
-from game import * 
+
 
 class user:
     def __init__(self, username, password, games, balance):
@@ -7,11 +7,6 @@ class user:
         self.password = password
         self.games = []
         self.balance = 0.0
-
-    def save_user(self, user_list):
-        with open('users.txt', 'w') as file:
-            for i in range(len(user_list)):
-                file.write(f"{user_list[i].username},{user_list[i].password},{user_list[i].games},{user_list[i].balance}")
 
     def view_bal(self, balance):
         return balance
@@ -32,6 +27,12 @@ class user:
             game_list[game_key].purchase()
         else:
             return "Invalid game key"
+    
+        
+def save_user(self, user_list):
+        with open('users.txt', 'w') as file:
+            for i in range(len(user_list)):
+                file.write(f"{user_list[i].username},{user_list[i].password},{user_list[i].games},{user_list[i].balance}")
 
 def make_userlist():
     user_list = {}
@@ -83,6 +84,7 @@ def purchase_game(user_list, game_list, username):
         withdrawal = user_list[username].withdraw(discount_price)
         if withdrawal != "Insufficient funds" and game.purchase() == "Purchase Successful":
             print(f"You have purchased '{game.title}' for ${discount_price:.2f}.") # .2f makes it limited to 2 decimal points
+            game_list[game_key].add_game(game_list, game_key)
         else:
             print("Purchase failed due to insufficient funds or stock")
     else:
