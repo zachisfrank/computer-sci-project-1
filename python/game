@@ -1,5 +1,5 @@
 class game:
-    def __init__(self, game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+    def __init__(self, game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating):
         self.game_id = game_id
         self.title = title
         self.genre = genre
@@ -15,13 +15,13 @@ class game:
 
     def change_discount(self,new_discount):
         self.discount = new_discount
-        return discount
+        return self.discount
 
     def purchase(self):
-        if self.stock >= 1
+        if self.stock >= 1:
             self.stock -= 1
             return 'Purchase Successful'
-        else
+        else:
             return 'Insufficient Stock'
     
 def make_gamelist():
@@ -40,6 +40,6 @@ def display_games(game_list):
             print (f"| The purchase key is: ,{game_list[key].game_id}, ${game_list[key].price*game_list[key].discount}, | with only ,{game_list[key].stock}, disks left\n")
             print (game_list[key].description)
 
-def discount_game(game_list,key)
+def discount_game(game_list,key):
         input('Enter game_key to choose which game to change')
         change_discount()
