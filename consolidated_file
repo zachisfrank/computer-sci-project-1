@@ -1,0 +1,327 @@
+import os
+import time
+current_time = time.ctime()
+class user:
+    def __init__(self, username, password, games, balance, games_delivered = None, game_delivery_date = None):
+        self.username = username
+        self.password = password
+        self.games = games if games is not None else []
+        self.balance = balance
+        self.games_delivered = games_delivered if games_delivered is not None else []
+        self.game_delivery_date = game_delivery_date if game_delivery_date is not None else {}
+
+    def view_bal(self):
+        return self.balance
+
+    def deposit(self, amount):
+        self.balance += float(amount)
+
+    def withdraw(self, amount):
+        if self.balance >= amount:
+            self.balance -= float(amount)
+            return amount
+        else:
+            return "Insufficient funds"
+
+    def add_game(self,game_list, game_key):
+        if game_key in game_list:
+            self.games.append(game_key)
+            game_list[game_key].purchase()
+        else:
+            return "Invalid game key"
+    def remove_game(self,game_key):
+        if game_key in self.games:
+            self.games.remove(game_key)
+            return f"Game removed: {game_key}"
+        else:
+            return "Invalid game key"
+def save_user(user_list):
+    with open('users.txt', 'w') as file:
+        for user in user_list.values():
+            file.write(f"{user.username},{user.password},{user.games},{user.balance}\n")
+def make_userlist():
+    user_list = {}
+    try:
+        with open('users.txt', 'r') as user_file:
+            for line in user_file:
+                username, password, games_str, balance = line.strip().split(',')
+                games = games_str.split("|") if games_str else []
+                old_user = user(username, password, games, float(balance))
+                user_list[username] = old_user
+    except FileNotFoundError:
+        print("No existing user found.")
+    return user_list
+def edit_user(user_list, username):
+    while True:
+        os.system('cls')
+        print("\nUser Menu Options:")
+        print("a. View balance")
+        print("b. Deposit funds")
+        print("c. Withdraw funds")
+        print("d. Remove game")
+        print("e. Save & Quit")
+        
+        option = input("Select an option: ").lower()
+        try:
+            if option == 'a':
+                print(f"Your balance is ${user_list[username].view_bal():.2f}")
+            elif option == 'b':
+                amount = float(input("Enter the amount to deposit: "))
+                user_list[username].deposit(amount)
+            elif option == 'c':
+                amount = float(input("Enter the amount to withdraw: "))
+                withdrawal = user_list[username].withdraw(amount)
+                if withdrawal != "Insufficient funds":
+                    print(f"You have withdrawn ${withdrawal:.2f}.")
+                else:
+                    print(withdrawal)
+            elif option == 'd':
+                game_key = input ("Enter the purchase key for the game you wish to remove").strip()
+                user_list[username].remove_game(game_key)
+            elif option == 'e':
+                save_user(user_list)
+                print("User information saved.")
+                break
+            else:
+                print("Invalid option. Please try again.")
+        except ValueError:
+            print("Enter a valid option.")
+def make_user(user_list):
+    user_exist = True
+    while user_exist:
+        username = input("Enter your username:\n").strip().lower()
+        password = input("Enter your password:\n").strip().lower()
+        if username in user_list:
+            print('This user already exists. Try again.')
+        else:
+            user_exist = False
+            new_user = user(username, password, [], 0, [], {})
+            user_list[username] = new_user
+    return user_list, username
+
+def validate_user(user_list):
+    while True:
+        is_new_user = input("Are you new to the programs? (y/n)").strip().lower()
+        if is_new_user == 'n': 
+            username = input("Enter Username:").strip().lower()
+            password = input("Enter Password:").lower()
+            if username in user_list and user_list[username].password == password:
+                    return True, username, user_list
+            if username == 'admin' and password == 'admin':
+                return "Admin"
+            else:
+                print("Invalid username or password")
+        elif is_new_user == 'y':
+            user_list, username = make_user(user_list)
+            return True, username, user_list
+        else:
+            print("Please enter 'y' or 'n'.")
+def check_game_delivery(user_list, game_list, username):
+    for game_key in user_list[username].games:
+        if time.time() > user_list[username].game_delivery_date[game_key]+(86400*5):
+            user_list[username].games.remove(game_key)
+            print(f"Your game '{game_list[game_key].title}' has been delivered.")
+            user_list[username].games_delivered.append(game_key)
+        else:
+            print(f"Your game '{game_list[game_key].title}' has not been delivered yet.")
+def purchase_game(user_list, game_list, username):
+    game_key = input ("Enter the purchase key for the game you wish to buy").strip()
+    if game_key in game_list:
+        game = game_list[game_key]
+        discount_price = game.price*(1-game.discount)
+        withdrawal = user_list[username].withdraw(discount_price)
+        if withdrawal != "Insufficient funds" and game.purchase() == "Purchase Successful":
+            game_list[game_key].sales += 1
+            print(f"You have purchased '{game.title}' for ${discount_price:.2f}.\n") # .2f makes it limited to 2 decimal points
+            print(f"It will be dellivered in 3-5 business days from now.")
+            order_time = time.time() 
+            user_list[username].add_game(game_list, game_key)
+            user_list[username].game_delivery_date[game_key] = order_time
+            game_list[game_key].sales_total += discount_price
+            save_gamelist(game_list)
+        else:
+            print("Purchase failed due to insufficient funds or stock")
+    else:
+        print("Invalid game key")  
+class game:
+    def __init__(self, game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total):
+        self.game_id = game_id
+        self.title = title
+        self.genre = genre
+        self.platform = platform
+        self.price = float(price) 
+        self.stock = stock
+        self.discount = discount if discount is not None else 0.0
+        self.publisher = publisher
+        self.release_date = release_date
+        self.description = description
+        self.sales = sales if sales is not None else 0
+        self.rating = rating
+        self.sales_total = sales_total if sales_total is not None else 0
+
+    def change_discount(self,new_discount):
+        self.discount = new_discount/100
+        return self.discount
+
+    def purchase(self):
+        if self.stock >= 1:
+            self.stock -= 1
+            return 'Purchase Successful'
+        else:
+            return 'Insufficient Stock'
+def save_gamelist(game_list):
+    with open('game_list.txt', 'w') as game_file:
+        for i in range(len(game_list)):
+            game_file.write(f"{game_list[i].game_id},{game_list[i].title},{game_list[i].genre},{game_list[i].platform}, {game_list[i].price}, {game_list[i].stock},{game_list[i].discount},{game_list[i].publisher},{game_list[i].release_date},{game_list[i].description},{game_list[i].sales},{game_list[i].rating}\n")
+def make_gamelist():
+        game_list = {}
+        try:
+            with open('game_list.txt', 'r') as game_file:
+                for lines in game_file:
+                    game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating = lines.strip().split(',')
+                    old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+                    game_list[game_id] = old_game
+            return game_list
+        except FileNotFoundError:
+            print("No existing games found.")
+def display_games(game_list):
+        for key in game_list:
+            print (f"{game_list[key].publisher} released {game_list[key].title} in  {game_list[key].release_date} | , {game_list[key].rating}/10 | \n")
+            print (f"| The purchase key is: ,{game_list[key].game_id}, ${game_list[key].price*game_list[key].discount}, | with only ,{game_list[key].stock}, disks left\n")
+            print (game_list[key].description)
+def discount_game(game_list):
+        key = input('Enter game_key to choose which game to change')
+        new_disc = input('Enter the new percentage sale as a full integer')
+        game_list[key].change_discount(new_disc)
+        save_gamelist(game_list)
+def main_menu(user_list, username):
+    while True:
+        game_list = make_gamelist()
+        check_game_delivery(user_list, game_list, username)
+        print("\nMain Menu Options:")
+        print("a. View the game catalog")
+        print("b. Place an order for the game disk")
+        print("c. Update user info")
+        print("d. Save & Quit")
+        
+        option = input("Select an option: ").lower()
+        try:
+            if option == 'a':
+                os.system('cls')
+                display_games(game_list)
+            elif option == 'b':
+                purchase_game(user_list,game_list, username)
+            elif option == 'c':
+                os.system('cls')
+                edit_user(user_list,username)
+            elif option == 'd':
+                print("Exiting the main menu. Goodbye!")
+                save_user(user_list)
+                save_gamelist(game_list)
+                break
+            else:
+                print("Please enter a valid option.")
+        except ValueError:
+            print("Enter a valid option.")
+def gen_sales():
+    game_list = make_gamelist()
+    for key in game_list:
+        print (f"{game_list[key].title} has sold {game_list[key].sales} disks")
+        print (f"The total sales is ${game_list[key].sales_total}")
+def gen_stock_options(game_list):
+    print("a. View stock remaining")
+    print("b. Change stock remaining")
+    user_choice = input("\n ").lower().strip(' ')
+    if user_choice == 'a':
+        gen_stock_remaining(game_list)
+    elif user_choice == 'b':
+        game_list = change_stock(game_list)
+    return game_list
+def change_stock(game_list):
+    try:
+        key = input("Enter game_key to choose which game's stock to change")
+        new_stock = input('Enter the new stock amount')
+        game_list[key].stock = int(new_stock)
+    except ValueError:
+        print("Invalid Input. Stock must be a number")
+    return game_list
+def gen_stock_remaining(game_list):
+    for key in game_list:
+        print (f"{game_list[key].title} has {game_list[key].stock} disks left")
+def orders():
+    user_list = make_userlist()
+    for key in user_list:
+        print (f"{user_list[key].username} has {len(user_list[key].games)} game(s) in their order")
+def pricing():
+    game_list = make_gamelist()
+    for key in game_list:
+        print (f"{game_list[key].title} has a price of ${game_list[key].price*game_list[key].discount}")
+    try:
+        key = input("Enter game_key to change the price")
+        new_price = input("Enter the new price")
+        game_list[key].price = new_price
+    except ValueError:
+        print("Invalid Input. Price must be a number")
+    return game_list
+def gen_user_data():
+    user_list = make_userlist()
+    key = input("Enter username to view (type 'all' for all users)").lower()
+    if key == 'all':
+        for key in user_list:
+            print (f"{user_list[key].username} has a balance of ${user_list[key].balance}")
+            print (f"{user_list[key].username} has {len(user_list[key].games)} game(s) in their order")
+            print (f"{user_list[key].username} has {user_list[key].games_delivered} game(s) delivered")
+        return
+    if user_list[key] == None:
+        print("User does not exist")
+    else:
+        print (f"{user_list[key].username} has a balance of ${user_list[key].balance}")
+        print (f"{user_list[key].username} has {len(user_list[key].games)} game(s) in their order")
+        print (f"{user_list[key].username} has {user_list[key].games_delivered} game(s) delivered")
+def admin_menu():
+    while True:
+        game_list = make_gamelist()
+        user_list = make_userlist()
+        print("\nAdmin Menu Options:")
+        print("a. Generate sales report")
+        print("b. Generate stock report")
+        print("c. Manage current orders")
+        print("d. Edit game pricing")
+        print("e. View user data")
+        print("f. Edit discount")
+        print("g. Save & Quit")
+        
+        option = input("Select an option: ").lower()
+        try:
+            if option == 'a':
+                gen_sales()
+            elif option == 'b':
+                game_list = gen_stock_options(game_list)
+            elif option == 'c':
+                orders()
+            elif option == 'd':
+                pricing()
+            elif option == 'e':
+                gen_user_data()
+            elif option == 'f':
+                discount_game(game_list)
+            elif option == 'g':
+                print("Exiting the admin menu. Goodbye!")
+                break
+            else:
+                print("Please enter a valid option.")
+            save_gamelist(game_list)
+            save_user(user_list)
+        except ValueError:
+            print("Enter a valid option.")
+def main(): 
+    user_list = make_userlist()
+    while True:
+        validation, username, user_list = validate_user(user_list)
+        if validation == True:
+            main_menu(user_list, username)
+        elif validation == "Admin":
+            admin_menu()
+        else:
+            print('Username or Password is invalid')
+main()
