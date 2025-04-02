@@ -98,7 +98,6 @@ def make_user(user_list):
             new_user = user(username, password, [], 0, [], {})
             user_list[username] = new_user
     return user_list, username
-
 def validate_user(user_list):
     while True:
         is_new_user = input("Are you new to the programs? (y/n)\n").strip().lower()
@@ -176,7 +175,7 @@ def save_gamelist(game_list):
 def make_gamelist():
         game_list = {}
         try:
-            with open('game_list.txt', 'r') as game_file:
+            with open('C:\Users\User01\Documents\GitHub\computer-sci-project-1\game_list', 'r') as game_file:
                 for lines in game_file:
                     game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating = lines.strip().split(',')
                     old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
