@@ -101,14 +101,14 @@ def make_user(user_list):
 
 def validate_user(user_list):
     while True:
-        is_new_user = input("Are you new to the programs? (y/n)").strip().lower()
+        is_new_user = input("Are you new to the programs? (y/n)\n").strip().lower()
         if is_new_user == 'n': 
             username = input("Enter Username:").strip().lower()
             password = input("Enter Password:").lower()
             if username in user_list and user_list[username].password == password:
                     return True, username, user_list
             if username == 'admin' and password == 'admin':
-                return "Admin"
+                return "Admin", username, user_list
             else:
                 print("Invalid username or password")
         elif is_new_user == 'y':
@@ -185,10 +185,14 @@ def make_gamelist():
         except FileNotFoundError:
             print("No existing games found.")
 def display_games(game_list):
+    try:
         for key in game_list:
             print (f"{game_list[key].publisher} released {game_list[key].title} in  {game_list[key].release_date} | , {game_list[key].rating}/10 | \n")
             print (f"| The purchase key is: ,{game_list[key].game_id}, ${game_list[key].price*game_list[key].discount}, | with only ,{game_list[key].stock}, disks left\n")
             print (game_list[key].description)
+    except TypeError:
+        os.system('cls')
+        game_list = make_gamelist()
 def discount_game(game_list):
         key = input('Enter game_key to choose which game to change')
         new_disc = input('Enter the new percentage sale as a full integer')
@@ -222,6 +226,7 @@ def main_menu(user_list, username):
             else:
                 print("Please enter a valid option.")
         except ValueError:
+            os.system('cls')
             print("Enter a valid option.")
 def gen_sales():
     game_list = make_gamelist()
