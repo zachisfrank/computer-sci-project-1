@@ -58,16 +58,19 @@ def edit_user(user_list, username):
         print("a. View balance")
         print("b. Deposit funds")
         print("c. Withdraw funds")
-        print("d. Remove game")
+        print("d. Remove game ")
         print("e. Save & Quit")
         
         option = input("Select an option: ").lower()
         try:
             if option == 'a':
                 print(f"Your balance is ${user_list[username].view_bal():.2f}")
+                time.sleep(1)
             elif option == 'b':
                 amount = float(input("Enter the amount to deposit: "))
                 user_list[username].deposit(amount)
+                print(f"You have successfully deposited ${amount}")
+                time.sleep(1)
             elif option == 'c':
                 amount = float(input("Enter the amount to withdraw: "))
                 withdrawal = user_list[username].withdraw(amount)
@@ -76,7 +79,7 @@ def edit_user(user_list, username):
                 else:
                     print(withdrawal)
             elif option == 'd':
-                game_key = input ("Enter the purchase key for the game you wish to remove").strip()
+                game_key = input ("Enter the purchase key for the game you wish to remove (NO REFUNDS!)\n").strip()
                 user_list[username].remove_game(game_key)
             elif option == 'e':
                 save_user(user_list)
@@ -124,7 +127,7 @@ def check_game_delivery(user_list, game_list, username):
         else:
             print(f"Your game '{game_list[game_key].title}' has not been delivered yet.")
 def purchase_game(user_list, game_list, username):
-    game_key = input ("Enter the purchase key for the game you wish to buy").strip()
+    game_key = input ("Enter the purchase key for the game you wish to buy\n").strip()
     if game_key in game_list:
         game = game_list[game_key]
         discount_price = game.price*(1-game.discount)
@@ -171,27 +174,26 @@ class game:
 def save_gamelist(game_list):
     with open('game_list.txt', 'w') as game_file:
         for i in range(len(game_list)):
-            game_file.write(f"{game_list[i].game_id},{game_list[i].title},{game_list[i].genre},{game_list[i].platform}, {game_list[i].price}, {game_list[i].stock},{game_list[i].discount},{game_list[i].publisher},{game_list[i].release_date},{game_list[i].description},{game_list[i].sales},{game_list[i].rating}\n")
+            game_file.write(f"{game_list[i].game_id},{game_list[i].title},{game_list[i].genre},{game_list[i].platform}, {game_list[i].price}, {game_list[i].stock},{game_list[i].discount},{game_list[i].publisher},{game_list[i].release_date},{game_list[i].description},{game_list[i].sales},{game_list[i].rating},{game_list[i].sales_total}\n")
 def make_gamelist():
         game_list = {}
         try:
             with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\game_list', 'r') as game_file:
                 for lines in game_file:
-                    print(f"DEBUG: Reading line -> {lines}")
                     game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total = lines.strip().split(',')
-                    old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total)
-                    game_list[game_id] = old_game
+                    old_game = game(game_id, title, genre, platform, float(price), int(stock), float(discount), publisher, release_date, description, int(sales), rating, sales_total)
+                    game_list[old_game.game_id] = old_game
             return game_list
         except FileNotFoundError:
             print("No existing games found.")
 def display_games(game_list):
     try:
         for key in game_list:
-            print (f"{game_list[key].publisher} released {game_list[key].title} in  {game_list[key].release_date} | , {game_list[key].rating}/10 | \n")
-            print (f"| The purchase key is: ,{game_list[key].game_id}, ${game_list[key].price*game_list[key].discount}, | with only ,{game_list[key].stock}, disks left\n")
-            print (game_list[key].description)
+            print(" _______________________________________________________________________________________________________________________________")
+            print (f"| {game_list[key].publisher} released {game_list[key].title} in {game_list[key].release_date} | Rating: {game_list[key].rating}/10 |")
+            print (f"| The purchase key is: {game_list[key].game_id} with a ${game_list[key].price*(1-game_list[key].discount):.2f} price tag | with only {game_list[key].stock} disks left |")
+            print (f"| Desctiption: {game_list[key].description}\n")
     except TypeError:
-        game_list = make_gamelist()
         print('An error occurred while loading the game list')
         time.sleep(1)
 def discount_game(game_list):
@@ -227,10 +229,9 @@ def main_menu(user_list, username):
             else:
                 print("Please enter a valid option.")
         except ValueError:
-            os.system('cls')
             print("Enter a valid option.")
-def gen_sales():
-    game_list = make_gamelist()
+            time.sleep(1)
+def gen_sales(game_list):
     for key in game_list:
         print (f"{game_list[key].title} has sold {game_list[key].sales} disks")
         print (f"The total sales is ${game_list[key].sales_total}")
@@ -300,7 +301,7 @@ def admin_menu():
         option = input("Select an option: ").lower()
         try:
             if option == 'a':
-                gen_sales()
+                gen_sales(game_list)
             elif option == 'b':
                 game_list = gen_stock_options(game_list)
             elif option == 'c':
