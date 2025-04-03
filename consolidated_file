@@ -100,6 +100,7 @@ def edit_user(user_list, username):
                     print(f"You have withdrawn ${withdrawal:.2f}.")
                 else:
                     print(withdrawal)
+                    time.sleep(1)
             elif option == 'd':
                 game_key = input ("Enter the purchase key for the game you wish to remove (NO REFUNDS!)\n").strip()
                 user_list[username].remove_game(game_key)
