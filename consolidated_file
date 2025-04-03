@@ -1,14 +1,16 @@
 import os
 import time
+from tkinter import N
 current_time = time.ctime()
 class user:
-    def __init__(self, username, password, games, balance, games_delivered = None, game_delivery_date = None):
+    def __init__(self, username, password, games, balance, games_delivered = None, game_delivery_date = None, game_delivery_date_asc = None):
         self.username = username
         self.password = password
         self.games = games if games is not None else []
         self.balance = balance
         self.games_delivered = games_delivered if games_delivered is not None else []
         self.game_delivery_date = game_delivery_date if game_delivery_date is not None else {}
+        self.game_delivery_date_asc = game_delivery_date_asc if game_delivery_date_asc is not None else []
 
     def view_bal(self):
         return self.balance
@@ -32,21 +34,41 @@ class user:
     def remove_game(self,game_key):
         if game_key in self.games:
             self.games.remove(game_key)
-            return f"Game removed: {game_key}"
+            print(f"Game removed: {game_key}")
+        if game_key in self.game_delivery_date:
+            self.game_delivery_date.pop(game_key)
+            print(f"Game removed: {game_key}")
+        if game_key in self.game_delivery_date_asc:
+            self.game_delivery_date_asc.remove(game_key)
+            print(f"Game removed: {game_key}")
+        if game_key in self.games_delivered:
+            self.games_delivered.remove(game_key)
+            print(f"Game removed: {game_key}")
         else:
-            return "Invalid game key"
+            print("Invalid game key")
 def save_user(user_list):
-    with open('users.txt', 'w') as file:
+    with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\users', 'w') as file:
         for user in user_list.values():
-            file.write(f"{user.username},{user.password},{user.games},{user.balance}\n")
+            games_deliver = "|".join(user.games_delivered)
+            game_deliver_date = " ".join(str(value) for value in user.game_delivery_date.values())
+            games_keys = "|".join(user.games)
+            games_delivery_date_asc = "|".join(user.game_delivery_date_asc)
+            file.write(f"{user.username},{user.password},{games_keys},{user.balance},{games_deliver},{game_deliver_date},{games_delivery_date_asc}\n")
 def make_userlist():
     user_list = {}
     try:
-        with open('users.txt', 'r') as user_file:
+        with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\users', 'r') as user_file:
             for line in user_file:
-                username, password, games_str, balance = line.strip().split(',')
+                username, password, games_str, balance, games_delivered_str, game_delivery_date_str, game_delivery_asc_str = line.strip().split(',')
                 games = games_str.split("|") if games_str else []
-                old_user = user(username, password, games, float(balance))
+                games_delivered= games_delivered_str.split('|') if games_delivered_str else []
+                game_delivery_date = game_delivery_date_str.split(' ') if game_delivery_date_str else []
+                game_delivery_asc = game_delivery_asc_str.split('|') if game_delivery_asc_str else [] 
+                game_delivery_date_dict = {}
+                for i,timestamp in enumerate(game_delivery_date):
+                    if i < len(game_delivery_date):
+                        game_delivery_date_dict[game_delivery_asc[i]] = float(timestamp) #converts the list of dates to integers and assigns them to game_delivery_date with game_delivery_asc as the associating game id
+                old_user = user(username, password, games, float(balance),games_delivered, game_delivery_date_dict, game_delivery_asc)
                 user_list[username] = old_user
     except FileNotFoundError:
         print("No existing user found.")
@@ -81,6 +103,7 @@ def edit_user(user_list, username):
             elif option == 'd':
                 game_key = input ("Enter the purchase key for the game you wish to remove (NO REFUNDS!)\n").strip()
                 user_list[username].remove_game(game_key)
+                time.sleep(1)
             elif option == 'e':
                 save_user(user_list)
                 print("User information saved.")
@@ -90,6 +113,7 @@ def edit_user(user_list, username):
         except ValueError:
             print("Enter a valid option.")
 def make_user(user_list):
+    username = ""
     user_exist = True
     while user_exist:
         username = input("Enter your username:\n").strip().lower()
@@ -119,13 +143,16 @@ def validate_user(user_list):
         else:
             print("Please enter 'y' or 'n'.")
 def check_game_delivery(user_list, game_list, username):
-    for game_key in user_list[username].games:
-        if time.time() > user_list[username].game_delivery_date[game_key]+(86400*5):
-            user_list[username].games.remove(game_key)
-            print(f"Your game '{game_list[game_key].title}' has been delivered.")
-            user_list[username].games_delivered.append(game_key)
-        else:
-            print(f"Your game '{game_list[game_key].title}' has not been delivered yet.")
+    for game_key in user_list[username].games[:]:
+        if game_key in user_list[username].game_delivery_date:
+            if time.time() > user_list[username].game_delivery_date[game_key]+(86400*5):
+                user_list[username].games.remove(game_key)
+                user_list[username].game_delivery_date.pop(game_key)
+                user_list[username].game_delivery_date_asc.remove(game_key)
+                print(f"Your game '{game_list[game_key].title}' has been delivered.")
+                user_list[username].games_delivered.append(game_key)
+            else:
+                print(f"Your game '{game_list[game_key].title}' has not been delivered yet.")
 def purchase_game(user_list, game_list, username):
     game_key = input ("Enter the purchase key for the game you wish to buy\n").strip()
     if game_key in game_list:
@@ -140,11 +167,12 @@ def purchase_game(user_list, game_list, username):
             user_list[username].add_game(game_list, game_key)
             user_list[username].game_delivery_date[game_key] = order_time
             game_list[game_key].sales_total += discount_price
+            user_list[username].game_delivery_date_asc.append(game_key)
             save_gamelist(game_list)
         else:
             print("Purchase failed due to insufficient funds or stock")
     else:
-        print("Invalid game key")  
+        print("Invalid game key")
 class game:
     def __init__(self, game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total):
         self.game_id = game_id
@@ -159,7 +187,7 @@ class game:
         self.description = description
         self.sales = sales if sales is not None else 0
         self.rating = rating
-        self.sales_total = sales_total if sales_total is not None else 0
+        self.sales_total = float(sales_total)
 
     def change_discount(self,new_discount):
         self.discount = new_discount/100
@@ -173,8 +201,9 @@ class game:
             return 'Insufficient Stock'
 def save_gamelist(game_list):
     with open('game_list.txt', 'w') as game_file:
-        for i in range(len(game_list)):
-            game_file.write(f"{game_list[i].game_id},{game_list[i].title},{game_list[i].genre},{game_list[i].platform}, {game_list[i].price}, {game_list[i].stock},{game_list[i].discount},{game_list[i].publisher},{game_list[i].release_date},{game_list[i].description},{game_list[i].sales},{game_list[i].rating},{game_list[i].sales_total}\n")
+          for key in game_list:
+            game = game_list[key]
+            game_file.write(f"{game.game_id},{game.title},{game.genre},{game.platform}, {game.price}, {game.stock},{game.discount},{game.publisher},{game.release_date},{game.description},{game.sales},{game.rating},{game.sales_total}\n")
 def make_gamelist():
         game_list = {}
         try:
@@ -196,20 +225,31 @@ def display_games(game_list):
     except TypeError:
         print('An error occurred while loading the game list')
         time.sleep(1)
+def display_owned_games(user_list, game_list, username):
+    try:
+        print("The following games have been already been delivered to you:")
+        for value in user_list[username].games_delivered:
+            cleaned_value = value.strip()
+            if cleaned_value in game_list:
+                print(f"{game_list[cleaned_value].title}")
+    except:
+        print("You have no games delivered")
 def discount_game(game_list):
         key = input('Enter game_key to choose which game to change')
         new_disc = input('Enter the new percentage sale as a full integer')
         game_list[key].change_discount(new_disc)
         save_gamelist(game_list)
 def main_menu(user_list, username):
+    game_list = make_gamelist()
+    check_game_delivery(user_list, game_list, username)
     while True:
         game_list = make_gamelist()
-        check_game_delivery(user_list, game_list, username)
         print("\nMain Menu Options:")
         print("a. View the game catalog")
         print("b. Place an order for the game disk")
         print("c. Update user info")
-        print("d. Save & Quit")
+        print("d. Display the games you have")
+        print("e. Save & Quit")
         
         option = input("Select an option: ").lower()
         try:
@@ -222,6 +262,8 @@ def main_menu(user_list, username):
                 os.system('cls')
                 edit_user(user_list,username)
             elif option == 'd':
+                display_owned_games(user_list,game_list, username)
+            elif option == 'e':
                 print("Exiting the main menu. Goodbye!")
                 save_user(user_list)
                 save_gamelist(game_list)
@@ -255,12 +297,10 @@ def change_stock(game_list):
 def gen_stock_remaining(game_list):
     for key in game_list:
         print (f"{game_list[key].title} has {game_list[key].stock} disks left")
-def orders():
-    user_list = make_userlist()
+def orders(user_list):
     for key in user_list:
         print (f"{user_list[key].username} has {len(user_list[key].games)} game(s) in their order")
-def pricing():
-    game_list = make_gamelist()
+def pricing(game_list):
     for key in game_list:
         print (f"{game_list[key].title} has a price of ${game_list[key].price*game_list[key].discount}")
     try:
@@ -305,9 +345,9 @@ def admin_menu():
             elif option == 'b':
                 game_list = gen_stock_options(game_list)
             elif option == 'c':
-                orders()
+                orders(user_list)
             elif option == 'd':
-                pricing()
+                pricing(game_list)
             elif option == 'e':
                 gen_user_data()
             elif option == 'f':
