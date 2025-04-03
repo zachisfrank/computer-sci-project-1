@@ -175,10 +175,11 @@ def save_gamelist(game_list):
 def make_gamelist():
         game_list = {}
         try:
-            with open('C:\Users\User01\Documents\GitHub\computer-sci-project-1\game_list', 'r') as game_file:
+            with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\game_list', 'r') as game_file:
                 for lines in game_file:
-                    game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating = lines.strip().split(',')
-                    old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating)
+                    print(f"DEBUG: Reading line -> {lines}")
+                    game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total = lines.strip().split(',')
+                    old_game = game(game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total)
                     game_list[game_id] = old_game
             return game_list
         except FileNotFoundError:
@@ -190,8 +191,9 @@ def display_games(game_list):
             print (f"| The purchase key is: ,{game_list[key].game_id}, ${game_list[key].price*game_list[key].discount}, | with only ,{game_list[key].stock}, disks left\n")
             print (game_list[key].description)
     except TypeError:
-        os.system('cls')
         game_list = make_gamelist()
+        print('An error occurred while loading the game list')
+        time.sleep(1)
 def discount_game(game_list):
         key = input('Enter game_key to choose which game to change')
         new_disc = input('Enter the new percentage sale as a full integer')

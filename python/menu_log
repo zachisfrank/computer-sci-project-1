@@ -1,5 +1,6 @@
-from game import*
-from user import*
+import os
+.game import *
+from user import *
 
 def main_menu(user_list, username):
     while True:
