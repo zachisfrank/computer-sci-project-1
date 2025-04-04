@@ -310,8 +310,8 @@ def pricing(game_list):
     for key in game_list:
         print (f"{game_list[key].title} has a price of ${game_list[key].price*(1-game_list[key].discount):.2f}")
     try:
-        key = input("Enter game_key to change the price")
-        new_price = input("Enter the new price")
+        key = input("Enter game_key to change the price: ")
+        new_price = input("Enter the new price: ")
         game_list[key].price = new_price
     except ValueError:
         print("Invalid Input. Price must be a number")
@@ -319,6 +319,7 @@ def pricing(game_list):
 def gen_user_data():
     user_list = make_userlist()
     key = input("Enter username to view (type 'all' for all users)").lower()
+    os.system('cls')
     if key == 'all':
         for key in user_list:
             print (f"{user_list[key].username} has a balance of ${user_list[key].balance}")
@@ -333,12 +334,13 @@ def gen_user_data():
         print (f"{user_list[key].username} has {user_list[key].games_delivered} game(s) delivered")
 def admin_menu():
     while True:
+        os.system("cls")
         game_list = make_gamelist()
         user_list = make_userlist()
         print("\nAdmin Menu Options:")
         print("a. Generate sales report")
         print("b. Generate stock report")
-        print("c. Manage current orders")
+        print("c. View current orders")
         print("d. Edit game pricing")
         print("e. View user data")
         print("f. Edit discount")
@@ -368,13 +370,16 @@ def admin_menu():
         except ValueError:
             print("Enter a valid option.")
 def main(): 
-    user_list = make_userlist()
-    while True:
-        validation, username, user_list = validate_user(user_list)
-        if validation == True:
-            main_menu(user_list, username)
-        elif validation == "Admin":
-            admin_menu()
-        else:
-            print('Username or Password is invalid')
+    try:
+        user_list = make_userlist()
+        while True:
+            validation, username, user_list = validate_user(user_list)
+            if validation == True:
+                main_menu(user_list, username)
+            elif validation == "Admin":
+                admin_menu()
+            else:
+                print('Username or Password is invalid')
+    except Exception:
+        print(f'A problem has occurred: {Exception} Beep Boop Beep Boop, please reload the program and try again')
 main()
