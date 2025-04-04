@@ -2,6 +2,8 @@ import os
 import time
 from tkinter import N
 current_time = time.ctime()
+user_file_path ='C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\users'
+game_file_path ='C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\game_list'
 class user: #main user class to store user information
     def __init__(self, username, password, games, balance, games_delivered = None, game_delivery_date = None, game_delivery_date_asc = None):
         self.username = username
@@ -47,7 +49,7 @@ class user: #main user class to store user information
         else:
             print("Invalid game key")
 def save_user(user_list): # self explanatory function used to save the user list to a text file
-    with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\users', 'w') as file:
+    with open(user_file_path, 'w') as file:
         for user in user_list.values():
             games_deliver = "|".join(user.games_delivered)
             game_deliver_date = " ".join(str(value) for value in user.game_delivery_date.values())
@@ -57,7 +59,7 @@ def save_user(user_list): # self explanatory function used to save the user list
 def make_userlist():
     user_list = {}
     try:
-        with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\users', 'r') as user_file:
+        with open(user_file_path, 'r') as user_file:
             for line in user_file:
                 username, password, games_str, balance, games_delivered_str, game_delivery_date_str, game_delivery_asc_str = line.strip().split(',') #assigns each variable with a value
                 games = games_str.split("|") if games_str else []
@@ -156,7 +158,7 @@ def check_game_delivery(user_list, game_list, username): #variable checks for if
                 user_list[username].games_delivered.append(game_key)
             else:
                 print(f"Your game '{game_list[game_key].title}' has not been delivered yet.")
-def purchase_game(user_list, game_list, username):
+def purchase_game(user_list, game_list, username): #main function to purchase game and complete needed tasks for formatting data
     game_key = input ("Enter the purchase key for the game you wish to buy\n").strip()
     if game_key in game_list: #input handling
         game = game_list[game_key]
@@ -203,14 +205,14 @@ class game:
         else:
             return 'Insufficient Stock'
 def save_gamelist(game_list):
-    with open('game_list.txt', 'w') as game_file:
+    with open(game_file_path, 'w') as game_file:
           for key in game_list:
             game = game_list[key]
             game_file.write(f"{game.game_id},{game.title},{game.genre},{game.platform}, {game.price}, {game.stock},{game.discount},{game.publisher},{game.release_date},{game.description},{game.sales},{game.rating},{game.sales_total}\n")
 def make_gamelist():
         game_list = {}
         try:
-            with open('C:\\Users\\zacha\\OneDrive - Catholic Education Western Australia\\Computer Science\\Project 1 Repo\\computer-sci-project-1\\game_list', 'r') as game_file:
+            with open(game_file_path, 'r') as game_file:
                 for lines in game_file:
                     game_id, title, genre, platform, price, stock, discount, publisher, release_date, description, sales, rating, sales_total = lines.strip().split(',')
                     old_game = game(game_id, title, genre, platform, float(price), int(stock), float(discount), publisher, release_date, description, int(sales), rating, sales_total)
