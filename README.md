@@ -78,4 +78,46 @@ The solution will include features to accept customer orders, check game availab
     - Missing or incomplete customer or sales data can impact reporting and analysis. Add mandatory fields to prevent incomplete entries.
 5. **Storage Limitations:**
     - Use a structured data storage approach (e.g., relational databases) to prevent data corruption or loss.
-  
+   
+# **Evidence of testing**
+
+  - There is already live test data within the users.txt file and game_list.txt file this all works well, 
+    although i had to change the delimitation within the user file for how i stored time values from '.' to ' ' because the time values were stored as floats which would incorrectly read the values.
+
+| Test Case | Input | Expected Output |
+| --- | --- | --- |
+| Register a new user | New username & password | User is added to file, login is possible afterward |
+| User login with correct credentials | Existing username/password | Access granted |
+| View balance | User selects 'a' from menu | Current balance printed |
+| Purchase a game with sufficient funds | Valid game key & balance | Game added to orders, balance deducted, confirmation |
+| Withdraw more than available balance | Balance: $10, Withdraw: $50 | "Insufficient funds" |
+
+## **Design Validation**
+
+### Reflection Checklist:
+
+-  Game delivery works using timestamp difference
+-  Orders are tracked per user
+-  File reading and writing persists data accurately
+-  Admin access and user access are separate
+-  Dictionary usage ensures O(1) search time
+-  Modularity effectively used to make the program well encapsulated
+-  The logistical side of reading and using the values found within dictionaries was implemented easily
+-  Reading and Writing from text files required tons of testing and debugging
+-  I wish to implement a better form of admin that lets you manipulate more date easier
+-  A possible limitation could include the fact you must wait 5 days for programs to be in your library
+-  I wish to also use a gui next time but found that learning and implementing effectively takes too long
+
+### Source of information
+- Information includes some advice from AI chatbot ChatGPT and Sometimes Integrated AI data scrapers within google searches
+- https://www.w3schools.com/python/gloss_python_remove_dictionary_items.asp
+- https://www.bing.com/search?pglt=417&q=python+delimiter+for+dictionary&cvid=4d061757c7bf4b6085197a289da9f20b&gs_lcrp=EgRlZGdlKgYIABBFGDkyBggAEEUYOTIGCAEQABhAMgYIAhAAGEAyBggDEAAYQDIGCAQQABhAMgYIBRAAGEAyBggGEAAYQDIGCAcQABhAMgYICBAAGEDSAQg3NjU1ajBqMagCALACAA&FORM=ANNTA1&PC=LCTS
+- https://www.epochconverter.com/
+- https://www.geeksforgeeks.org/python-time-module/
+- https://stackoverflow.com/questions/7370801/how-do-i-measure-elapsed-time-in-python
+- https://github.com/microsoft/pylance-release/issues/4359
+- https://stackoverflow.com/questions/6161799/append-list-within-classes-python
+- https://stackoverflow.com/questions/19596750/is-there-a-way-to-clear-your-printed-text-in-python
+- https://www.geeksforgeeks.org/sort-in-python/
+- https://www.geeksforgeeks.org/how-to-read-from-a-file-in-python/#linebyline-reading-in-python
+- https://stackoverflow.com/questions/40375790/how-to-call-a-function-within-a-nested-class
