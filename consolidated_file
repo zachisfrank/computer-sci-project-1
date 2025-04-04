@@ -239,8 +239,8 @@ def display_owned_games(user_list, game_list, username):
         print("You have no games delivered")
 def discount_game(game_list):
         try:
-            key = input('Enter game_key to choose which game to change').strip()
-            new_disc = int(input('Enter the new percentage sale as a full integer'))
+            key = input('Enter game_key to choose which game to change: ').strip()
+            new_disc = int(input('Enter the new percentage sale as a full integer '))
             game_list[key].change_discount(new_disc)
         except ValueError:
             print("Please enter a correct value")
