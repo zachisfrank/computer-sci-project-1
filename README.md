@@ -1,5 +1,7 @@
 To ensure the program works as required, make sure all file paths are correct before using program
-
+The admin username: admin
+The admin password: admin
+click on consolidated.py to start the program
 # Project Description
 
 This project involves developing a Python-based software solution for a small family business that sells games. The software aims to streamline the management of customer orders, inventory, and sales records while ensuring data security and accuracy. A simple text-based interface will be used to interact with the system, allowing for efficient operation without requiring advanced technical knowledge.
